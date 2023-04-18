@@ -1,0 +1,35 @@
+name: Terraform Deployment
+
+on:
+  push:
+    branches:
+      - main 
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest 
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Terraform
+        run: |
+          VERSION=$(curl --silent https://checkpoint-api.hashicorp.com/v1/check/terraform | jq -r -M '.current_version')
+          curl -o terraform.zip https://releases.hashicorp.com/terraform/${VERSION}/terraform_${VERSION}_linux_amd64.zip
+          unzip terraform.zip
+          sudo mv terraform /usr/local/bin/
+          terraform version
+
+      - name: Initialize Terraform
+        run: terraform init
+
+      - name: Validate Terraform Configuration
+        run: terraform validate
+
+      - name: Plan Terraform Changes
+        run: terraform plan -out=tfplan
+
+      - name: Apply Terraform Changes
+        run: terraform apply -input=false tfplan
+
