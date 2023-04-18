@@ -21,7 +21,7 @@ resource "aws_subnet" "private" {
   count = 2
   cidr_block = "10.0.${count.index.index + 3}.0/24" 
   tags = {
-    Name = "private-subnet-${count.index.index + 1}" # Substitua pelo nome desejado
+    Name = "private-subnet-${count.index.index + 1}" 
   }
 }
 
